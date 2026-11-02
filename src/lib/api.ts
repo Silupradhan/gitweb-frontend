@@ -2,6 +2,10 @@ import type { EventsResponse, EventDetail, Repository, FilterState } from './typ
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
+export function getEventStreamUrl(): string {
+  return `${BASE_URL}/events/stream`;
+}
+
 export async function fetchEvents(
   filters: FilterState,
   cursor: string | null = null,

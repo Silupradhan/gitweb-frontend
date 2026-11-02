@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { EventItem } from '@/lib/types';
 import EventIcon from './EventIcon';
 import { formatFriendlyTime } from '@/lib/timeAgo';
+import { useAppDispatch } from '@/lib/hooks';
+import { clearNewHighlight } from '@/features/events/eventsSlice';
 
 interface EventCardProps {
   event: EventItem;
@@ -11,6 +13,17 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onClick }: EventCardProps) {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (event.isNew) {
+      const timer = setTimeout(() => {
+        dispatch(clearNewHighlight(event.id));
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [event.isNew, event.id, dispatch]);
+
   return (
     <div
       onClick={onClick}
@@ -21,7 +34,11 @@ export default function EventCard({ event, onClick }: EventCardProps) {
           onClick();
         }
       }}
-      className="group flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md transition-all cursor-pointer gap-3"
+      className={`group flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-2xl border transition-all duration-700 cursor-pointer gap-3 ${
+        event.isNew
+          ? 'bg-blue-50/70 border-blue-300 dark:bg-blue-950/30 dark:border-blue-700 shadow-md ring-2 ring-blue-500/30'
+          : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md'
+      }`}
     >
       <div className="flex items-start gap-3.5 min-w-0 flex-1">
         {/* Sender Avatar with fallback */}
@@ -62,6 +79,13 @@ export default function EventCard({ event, onClick }: EventCardProps) {
             <span className="text-xs uppercase tracking-wide font-mono text-zinc-400 dark:text-zinc-500">
               {event.eventType}
             </span>
+
+            {/* FR-7.5: New event highlight badge */}
+            {event.isNew && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white animate-pulse">
+                NEW
+              </span>
+            )}
           </div>
 
           {/* Plain Text Title (FR-6.6: strictly rendered as text, never HTML) */}

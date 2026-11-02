@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { loadEvents, loadRepositories } from '@/features/events/eventsSlice';
+import { useLiveFeed } from '@/features/events/useLiveFeed';
 import Header from '@/components/Header';
 import FilterBar from '@/components/FilterBar';
 import EventList from '@/components/EventList';
@@ -11,6 +12,9 @@ import EventDetailModal from '@/components/EventDetailModal';
 export default function Home() {
   const dispatch = useAppDispatch();
   const { items, repositories } = useAppSelector((state) => state.events);
+
+  // FR-7.1 to FR-7.7: Establish SSE live feed connection with auto-reconnect and real-time updates
+  useLiveFeed();
 
   useEffect(() => {
     // Initial data fetch

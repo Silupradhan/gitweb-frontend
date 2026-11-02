@@ -6,7 +6,7 @@ import { loadEvents, loadRepositories } from '@/features/events/eventsSlice';
 
 export default function Header() {
   const dispatch = useAppDispatch();
-  const { status, items, repositories } = useAppSelector((state) => state.events);
+  const { status, items, repositories, connectionStatus } = useAppSelector((state) => state.events);
 
   const totalEventCount =
     repositories.reduce((sum, r) => sum + (Number(r.eventCount) || 0), 0) || items.length;
@@ -36,21 +36,31 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Dynamic Status & Actions */}
+        {/* Dynamic Status & Actions (FR-7.7: Connected, Reconnecting, Disconnected) */}
         <div className="flex items-center gap-3">
-          {status === 'failed' ? (
-            <div className="hidden sm:flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900">
+          {connectionStatus === 'reconnecting' ? (
+            <div className="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              <span>Live: Reconnecting...</span>
+            </div>
+          ) : status === 'failed' ? (
+            <div className="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900">
               <span className="w-2 h-2 rounded-full bg-rose-500" />
               <span>Offline (Check server)</span>
             </div>
           ) : status === 'loading' && items.length === 0 ? (
-            <div className="hidden sm:flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900">
+            <div className="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
               <span>Syncing events...</span>
             </div>
-          ) : (
-            <div className="hidden sm:flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900">
+          ) : connectionStatus === 'connected' ? (
+            <div className="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live &bull; {totalEventCount} event{totalEventCount === 1 ? '' : 's'}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
+              <span className="w-2 h-2 rounded-full bg-zinc-400" />
               <span>{totalEventCount} event{totalEventCount === 1 ? '' : 's'} recorded</span>
             </div>
           )}

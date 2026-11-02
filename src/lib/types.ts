@@ -8,6 +8,7 @@ export interface EventItem {
   senderName: string | null;
   senderAvatar: string | null;
   sourceLink: string | null;
+  isNew?: boolean;
 }
 
 export interface EventDetail {

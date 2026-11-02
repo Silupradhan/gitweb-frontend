@@ -16,6 +16,7 @@ interface EventsState {
   selectedEvent: EventDetail | null;
   isDetailLoading: boolean;
   detailError: string | null;
+  connectionStatus: 'connected' | 'reconnecting' | 'disconnected';
 }
 
 const initialFilters: FilterState = {
@@ -40,6 +41,7 @@ const initialState: EventsState = {
   selectedEvent: null,
   isDetailLoading: false,
   detailError: null,
+  connectionStatus: 'disconnected',
 };
 
 export const loadRepositories = createAsyncThunk(
@@ -92,6 +94,32 @@ export const eventsSlice = createSlice({
     closeDetail: (state) => {
       state.selectedEvent = null;
       state.detailError = null;
+    },
+    setConnectionStatus: (
+      state,
+      action: PayloadAction<'connected' | 'reconnecting' | 'disconnected'>
+    ) => {
+      state.connectionStatus = action.payload;
+    },
+    liveEventReceived: (state, action: PayloadAction<EventItem>) => {
+      const incoming = action.payload;
+      const exists = state.items.some((item) => item.id === incoming.id);
+      if (!exists) {
+        state.items.unshift({ ...incoming, isNew: true });
+        // Bump repository event count if repository is tracked
+        if (incoming.repositoryName) {
+          const repo = state.repositories.find((r) => r.fullName === incoming.repositoryName);
+          if (repo) {
+            repo.eventCount = (Number(repo.eventCount) || 0) + 1;
+          }
+        }
+      }
+    },
+    clearNewHighlight: (state, action: PayloadAction<number>) => {
+      const item = state.items.find((ev) => ev.id === action.payload);
+      if (item) {
+        item.isNew = false;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -148,6 +176,13 @@ export const eventsSlice = createSlice({
   },
 });
 
-export const { setFilter, resetFilters, closeDetail } = eventsSlice.actions;
+export const {
+  setFilter,
+  resetFilters,
+  closeDetail,
+  setConnectionStatus,
+  liveEventReceived,
+  clearNewHighlight,
+} = eventsSlice.actions;
 export const eventsReducer = eventsSlice.reducer;
 
