@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GitHub Webhook Event Hub — Frontend
+
+A real-time Next.js (App Router) + Tailwind CSS + Redux Toolkit dashboard for monitoring, filtering, and inspecting GitHub webhook events.
+
+## Features (Feature 6: Event Feed and Detail View)
+
+- **Header (FR-6.1)**: Brand title, live feed indicator, and one-click refresh button.
+- **Filter Bar (FR-6.2)**:
+  - Repository selector (with dynamic event counts)
+  - Event type selector (Push, Pull Request, Issues, Star, etc.)
+  - Real-time text search on event titles (debounced)
+  - Date range filters (From / To)
+  - One-click filter reset
+- **Event Feed Cards (FR-6.3)**:
+  - Sender avatar with fallback initials
+  - GitHub event type icon
+  - Human-readable event title (e.g. `PR #4 opened: Fix login bug`)
+  - Repository name badge
+  - Friendly relative time (e.g. `5 minutes ago`)
+- **Cursor Pagination (FR-6.4)**: "Load more" control fetching consecutive pages using cursor pagination (zero duplicates, zero gaps).
+- **Event Detail View (FR-6.5)**:
+  - Key fields (ID, Delivery UUID, status, type, action, repository, sender, timestamps)
+  - Collapsible, syntax-colored JSON tree for the complete original payload
+  - One-click "Copy JSON" button
+  - "Open on GitHub" link
+- **Strict Plain Text Display (FR-6.6)**: Safe against script injection (all text rendered as pure string content, never HTML).
+- **Responsive States (FR-6.7)**: Animated loading skeletons, friendly empty state, and error message banners across mobile, tablet, and desktop screens.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+1. Make sure your backend server is running on `http://localhost:3000`:
+   ```bash
+   cd ../backend
+   npm run dev
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Start the Next.js frontend (runs on port 3001):
+   ```bash
+   npm run dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Open [http://localhost:3001](http://localhost:3001) in your browser.
