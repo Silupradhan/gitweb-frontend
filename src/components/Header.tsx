@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { loadEvents, loadRepositories } from '@/features/events/eventsSlice';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Header() {
   const dispatch = useAppDispatch();
@@ -83,6 +84,8 @@ export default function Header() {
             </svg>
             <span className="hidden sm:inline">Refresh</span>
           </button>
+
+          <ThemeToggle />
         </div>
       </div>
     </header>
