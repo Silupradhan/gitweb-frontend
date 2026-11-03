@@ -12,7 +12,7 @@ import { makeStore, type AppStore } from './store';
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null);
 
-  if (!storeRef.current) {
+  if (!storeRef.current || !('analytics' in storeRef.current.getState())) {
     storeRef.current = makeStore();
   }
 

@@ -67,3 +67,58 @@ export interface EventsResponse {
   };
 }
 
+export interface AnalyticsStats {
+  summary: {
+    totalEvents: number;
+    eventsToday: number;
+    openPullRequests: number;
+    ciPassRate: number | null;
+  };
+  eventsPerDay: Array<{
+    date: string;
+    count: number;
+  }>;
+  eventTypeShare: Array<{
+    eventType: string;
+    count: number;
+    percentage: number;
+  }>;
+  topContributors: Array<{
+    login: string;
+    avatarUrl: string | null;
+    eventCount: number;
+  }>;
+  commitHeatmap: Array<{
+    date: string;
+    pushCount: number;
+    commitCount: number;
+  }>;
+  pullRequestMetrics: {
+    open: number;
+    merged: number;
+    closed: number;
+    avgTimeToMergeSeconds: number | null;
+    avgTimeToMergeFormatted: string | null;
+  };
+  issueMetrics: {
+    open: number;
+    closed: number;
+    avgTimeToCloseSeconds: number | null;
+    avgTimeToCloseFormatted: string | null;
+  };
+  ciMetrics: {
+    successful: number;
+    failed: number;
+    cancelled: number;
+    total: number;
+  };
+}
+
+export interface AnalyticsFilterState {
+  repository: string;
+  preset: '7d' | '30d' | '90d' | 'all' | 'custom';
+  fromDate: string;
+  toDate: string;
+}
+
+

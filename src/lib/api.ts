@@ -1,9 +1,43 @@
-import type { EventsResponse, EventDetail, Repository, FilterState } from './types';
+import type {
+  EventsResponse,
+  EventDetail,
+  Repository,
+  FilterState,
+  AnalyticsStats,
+} from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 export function getEventStreamUrl(): string {
   return `${BASE_URL}/events/stream`;
+}
+
+export async function fetchAnalyticsStats(options?: {
+  repository?: string;
+  fromDate?: string;
+  toDate?: string;
+}): Promise<AnalyticsStats> {
+  const params = new URLSearchParams();
+  if (options?.repository) {
+    params.set('repository', options.repository);
+  }
+  if (options?.fromDate) {
+    params.set('fromDate', new Date(options.fromDate).toISOString());
+  }
+  if (options?.toDate) {
+    const to = new Date(options.toDate);
+    to.setHours(23, 59, 59, 999);
+    params.set('toDate', to.toISOString());
+  }
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetch(`${BASE_URL}/analytics/stats${query}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch analytics statistics');
+  }
+
+  return res.json();
 }
 
 export async function fetchEvents(
