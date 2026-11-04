@@ -5,6 +5,7 @@ import type {
   FilterState,
   AnalyticsStats,
   User,
+  WebhookEndpoint,
 } from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -139,3 +140,60 @@ export async function fetchRepositories(): Promise<Repository[]> {
 
   return res.json();
 }
+
+export async function fetchEndpoints(): Promise<WebhookEndpoint[]> {
+  const res = await fetch(`${BASE_URL}/endpoints`, {
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch webhook endpoints');
+  }
+
+  return res.json();
+}
+
+export async function createEndpoint(name: string): Promise<WebhookEndpoint> {
+  const res = await fetch(`${BASE_URL}/endpoints`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to create webhook endpoint');
+  }
+
+  return res.json();
+}
+
+export async function updateEndpoint(
+  id: string,
+  data: { name?: string; isEnabled?: boolean }
+): Promise<WebhookEndpoint> {
+  const res = await fetch(`${BASE_URL}/endpoints/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to update webhook endpoint');
+  }
+
+  return res.json();
+}
+
+export async function deleteEndpoint(id: string, deleteEvents = false): Promise<void> {
+  const res = await fetch(`${BASE_URL}/endpoints/${id}?deleteEvents=${deleteEvents}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to delete webhook endpoint');
+  }
+}
+

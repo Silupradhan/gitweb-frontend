@@ -7,6 +7,16 @@ export interface User {
   createdAt: string;
 }
 
+export interface WebhookEndpoint {
+  id: string;
+  userId: number;
+  name: string;
+  secret: string;
+  isEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface EventItem {
   id: number;
   eventType: string;

@@ -9,6 +9,7 @@ import FilterBar from '@/components/FilterBar';
 import EventList from '@/components/EventList';
 import EventDetailModal from '@/components/EventDetailModal';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
+import EndpointsManager from '@/components/EndpointsManager';
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -83,6 +84,9 @@ export default function Home() {
 
         {activeTab === 'feed' ? (
           <>
+            {/* Endpoints & Repository Connection Manager (FR-10.1 to FR-10.8) */}
+            <EndpointsManager />
+
             {/* 2. Filter Bar (FR-6.1, FR-6.2) */}
             <FilterBar />
 
