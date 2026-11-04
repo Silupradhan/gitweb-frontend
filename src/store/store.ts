@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { counterReducer } from '@/features/counter/counterSlice';
 import { eventsReducer } from '@/features/events/eventsSlice';
 import { analyticsReducer } from '@/features/analytics/analyticsSlice';
+import authReducer from '@/features/auth/authSlice';
 
 /**
  * Store factory — Next.js App Router creates one store per request/session,
@@ -14,6 +15,7 @@ export const makeStore = () =>
       counter: counterReducer,
       events: eventsReducer,
       analytics: analyticsReducer,
+      auth: authReducer,
     },
   });
 

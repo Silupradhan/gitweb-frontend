@@ -1,3 +1,12 @@
+export interface User {
+  id: number;
+  githubId: number;
+  name: string;
+  email: string | null;
+  avatarUrl: string | null;
+  createdAt: string;
+}
+
 export interface EventItem {
   id: number;
   eventType: string;

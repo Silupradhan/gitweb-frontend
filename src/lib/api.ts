@@ -4,12 +4,46 @@ import type {
   Repository,
   FilterState,
   AnalyticsStats,
+  User,
 } from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 export function getEventStreamUrl(): string {
   return `${BASE_URL}/events/stream`;
+}
+
+export function getGitHubLoginUrl(): string {
+  return `${BASE_URL}/auth/github`;
+}
+
+export async function checkCurrentUser(): Promise<User | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/auth/me`, {
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      if (res.status === 401) return null;
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to authenticate user');
+    }
+    const data = await res.json();
+    return data.user ?? null;
+  } catch (err) {
+    console.error('[api] checkCurrentUser error:', err);
+    return null;
+  }
+}
+
+export async function logoutUser(): Promise<void> {
+  const res = await fetch(`${BASE_URL}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to logout');
+  }
 }
 
 export async function fetchAnalyticsStats(options?: {
@@ -31,7 +65,9 @@ export async function fetchAnalyticsStats(options?: {
   }
 
   const query = params.toString() ? `?${params.toString()}` : '';
-  const res = await fetch(`${BASE_URL}/analytics/stats${query}`);
+  const res = await fetch(`${BASE_URL}/analytics/stats${query}`, {
+    credentials: 'include',
+  });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || 'Failed to fetch analytics statistics');
@@ -64,13 +100,14 @@ export async function fetchEvents(
     params.set('fromDate', new Date(filters.fromDate).toISOString());
   }
   if (filters.toDate) {
-    // End of selected day
     const to = new Date(filters.toDate);
     to.setHours(23, 59, 59, 999);
     params.set('toDate', to.toISOString());
   }
 
-  const res = await fetch(`${BASE_URL}/events?${params.toString()}`);
+  const res = await fetch(`${BASE_URL}/events?${params.toString()}`, {
+    credentials: 'include',
+  });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || `Failed to fetch events: ${res.statusText}`);
@@ -80,7 +117,9 @@ export async function fetchEvents(
 }
 
 export async function fetchEventById(id: number): Promise<EventDetail> {
-  const res = await fetch(`${BASE_URL}/events/${id}`);
+  const res = await fetch(`${BASE_URL}/events/${id}`, {
+    credentials: 'include',
+  });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || `Failed to fetch event #${id}`);
@@ -90,7 +129,9 @@ export async function fetchEventById(id: number): Promise<EventDetail> {
 }
 
 export async function fetchRepositories(): Promise<Repository[]> {
-  const res = await fetch(`${BASE_URL}/repos`);
+  const res = await fetch(`${BASE_URL}/repos`, {
+    credentials: 'include',
+  });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || 'Failed to fetch repositories');
@@ -98,4 +139,3 @@ export async function fetchRepositories(): Promise<Repository[]> {
 
   return res.json();
 }
-
